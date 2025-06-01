@@ -25,11 +25,11 @@ export default function HowItWorksSection() {
     <section
       id="how-it-works"
       className="bg-[linear-gradient(to_right,rgba(251,191,36,0.6),rgba(249,115,22,0.5)),url('@/assets/images/about-section.png')]
-        h-[30vw] py-16 bg-cover bg-center bg-blend-multiply text-white overflow-hidden px-26 pe-14"
+        py-16 bg-cover bg-center bg-blend-multiply text-white overflow-hidden px-26 pe-14"
     >
       <div className="flex justify-between items-center mb-12">
         <h2 className="text-3xl font-bold">HOW IT WORKS</h2>
-        <Button variant="outline" className="text-amber-600 border-white hover:bg-white">
+        <Button variant="ghost" className="text-white w-48">
           Know more
         </Button>
       </div>

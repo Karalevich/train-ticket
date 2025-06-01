@@ -13,7 +13,7 @@ export function Header() {
     <header className="bg-neutral-800/95 backdrop-blur-xs text-white sticky top-12 z-1">
       <div className="container mx-auto">
         <nav className="flex items-center justify-between">
-          <Image src="/images/logo.webp" alt="Logo" width={80} height={40}/>
+          <Image src="/images/logo.webp" alt="Logo" width={80} height={80}/>
           <div className="hidden md:flex space-x-12 py-4">
             {navigationItems.map((item) => (
               <NavLink key={item.href} href={item.href}>
