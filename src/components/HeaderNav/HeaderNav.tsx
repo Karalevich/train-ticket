@@ -10,7 +10,7 @@ const navigationItems = [
 
 export function Header() {
   return (
-    <header className="bg-neutral-800/95 backdrop-blur-xs text-white sticky top-12 z-1">
+    <header className="bg-neutral-800/95 backdrop-blur-xs text-white sticky top-0 z-1 w-full">
       <div className="container mx-auto">
         <nav className="flex items-center justify-between">
           <Image src="/images/logo.webp" alt="Logo" width={80} height={80}/>

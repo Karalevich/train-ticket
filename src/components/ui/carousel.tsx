@@ -242,13 +242,13 @@ function CarouselDots() {
         <DotButton
           key={index}
           onClick={() => onDotButtonClick(index)}
-          className={cn('appearance-none bg-zinc-400 touch-manipulation cursor-pointer p-0 m-0',
-          'flex items-center justify-center rounded-full',
-            index === selectedIndex && 'w-[1.4rem] h-[1.4rem] bg-zinc-200'
+          className={cn('appearance-none touch-manipulation cursor-pointer p-0 m-0',
+          'flex items-center justify-center rounded-full w-[1.4rem] h-[1.4rem]',
+            index === selectedIndex && 'bg-zinc-200'
           )}
         >
             <span
-              className={cn('rounded-full w-[1rem] h-[1rem]', index === selectedIndex && 'bg-primary/90')}
+              className={cn('rounded-full w-[1rem] h-[1rem] bg-zinc-400', index === selectedIndex && 'bg-primary/90')}
             />
         </DotButton>
       ))}
