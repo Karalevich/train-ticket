@@ -2,16 +2,9 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 import { ComponentProps } from 'react';
-import { AlertCircle } from 'lucide-react';
 
-export interface InputProps extends ComponentProps<'input'> {
-  error: string | null
-  showErrorIcon?: boolean
-}
 
-function Input({ className, type, error, showErrorIcon = true, ...props }: InputProps) {
-  const inputId = props.id || props.name
-  const errorId = error ? `${inputId}-error` : undefined
+function Input({ className, type, ...props }: ComponentProps<'input'>) {
 
   return (
     <div className="relative">
@@ -26,30 +19,10 @@ function Input({ className, type, error, showErrorIcon = true, ...props }: Input
           'disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
           'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
           'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-          // Error state styling
-          error && 'border-destructive focus-visible:border-destructive',
-          // Add padding for error icon
-          error && showErrorIcon && 'pr-10',
           className,
         )}
-        aria-invalid={!!error}
-        aria-describedby={errorId}
         {...props}
       />
-
-      {/* Error icon */}
-      {error && showErrorIcon && (
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <AlertCircle className="h-4 w-4 text-destructive"/>
-        </div>
-      )}
-
-      {/* Error message */}
-      {error && (
-        <p id={errorId} className="mt-1 text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
     </div>
   )
 }
