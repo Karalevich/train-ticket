@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { DateRange, SelectRangeEventHandler } from 'react-day-picker'
+import { DateRange, Matcher, OnSelectHandler } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -14,30 +14,31 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-interface DateRangePickerInterface extends React.HTMLAttributes<HTMLDivElement> {
+interface DateRangePickerProps extends React.HTMLAttributes<HTMLDivElement> {
   date: DateRange | undefined
-  setDateAction: SelectRangeEventHandler | undefined
+  setDateAction: OnSelectHandler<DateRange> | undefined
+  disabled?: Matcher | Matcher[] | undefined
 }
 
 export function DatePickerWithRange({
                                       className,
                                       date,
                                       setDateAction,
-                                    }: DateRangePickerInterface) {
+                                      disabled
+                                    }: DateRangePickerProps) {
 
   return (
     <div className={cn('grid gap-2', className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            id="date"
             variant='secondary'
             className={cn(
               'w-auto justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )}
           >
-            <CalendarIcon />
+            <CalendarIcon/>
             {date?.from ? (
               date.to ? (
                 <>
@@ -54,12 +55,13 @@ export function DatePickerWithRange({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
+            required={true}
             mode="range"
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDateAction}
             numberOfMonths={2}
+            disabled={disabled}
           />
         </PopoverContent>
       </Popover>

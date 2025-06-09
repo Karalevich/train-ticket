@@ -14,7 +14,7 @@ export interface SearchProps {
   apiEndpoint?: string
   disabled?: boolean
   name: string
-  label: string
+  label?: string
 }
 
 const minSearchLength = 1
@@ -91,7 +91,7 @@ export default function Search({
         render={({ field }) => (
           <>
             <FormItem>
-              <FormLabel className="text-white">{label}</FormLabel>
+              {label && <FormLabel className="text-white">{label}</FormLabel>}
               <FormControl>
                 <Input
                   type="text"
@@ -104,7 +104,7 @@ export default function Search({
                   className="bg-white"
                 />
               </FormControl>
-              <FormMessage className="absolute -bottom-5"/>
+              <FormMessage className="absolute -bottom-6"/>
             </FormItem>
 
             {shouldShowDropdown &&

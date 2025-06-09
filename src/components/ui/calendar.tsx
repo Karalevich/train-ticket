@@ -52,8 +52,8 @@ function Calendar({
         range_end:
           'rounded-md aria-selected:bg-amber-500 aria-selected:text-primary-foreground',
         selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-        today: 'bg-accent text-accent-foreground',
+          'bg-amber-500 rounded-md text-primary-foreground hover:text-primary-foreground focus:text-primary-foreground',
+        today: 'bg-accent text-accent-foreground rounded-md',
         outside:
           'outside text-muted-foreground aria-selected:text-muted-foreground',
         disabled: 'text-muted-foreground opacity-50',
@@ -63,7 +63,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({className, ...props}) => {
+        Chevron: ({ className, ...props }) => {
           if (props.orientation === 'left') {
             return <ChevronLeftIcon className={cn('size-4', className)} {...props} />;
           }
