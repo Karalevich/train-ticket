@@ -1,6 +1,6 @@
 'use client'
 
-import type React from 'react'
+import React, { useRef } from 'react'
 
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
@@ -15,9 +15,9 @@ export interface SearchProps {
   disabled?: boolean
   name: string
   label?: string
+  minSearchLength: number
+  fullDataName: string
 }
-
-const minSearchLength = 1
 
 export default function Search({
                                  placeholder = 'Search...',
@@ -25,12 +25,15 @@ export default function Search({
                                  disabled = false,
                                  form,
                                  name,
-                                 label
+                                 label,
+                                 minSearchLength,
+                                 fullDataName
                                }: SearchProps) {
   const [searchList, setSearchList] = useState<ItemInterface[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const isValueSelected = useRef(false)
 
   const [debounced] = debounce(async (searchTerm: string) => {
     setIsLoading(true)
@@ -53,10 +56,10 @@ export default function Search({
     }
   }, 300)
 
-  const handleInputChange = (
+  function handleInputChange(
     e: React.ChangeEvent<HTMLInputElement>,
     fieldOnChange: (value: string) => void
-  ) => {
+  ) {
     const newValue = e.target.value
     fieldOnChange(newValue)
     setIsOpen(true)
@@ -71,14 +74,30 @@ export default function Search({
     debounced(newValue.trim())
   }
 
-  const handleInputFocus = () => {
+  function handleInputFocus() {
     if (searchList.length > 0) {
       setIsOpen(true)
     }
   }
 
-  const handleInputBlur = () => {
-    setTimeout(() => setIsOpen(false), 150)
+  function handleInputBlur(fieldOnChange: (...event: any[]) => void) {
+    if (!isValueSelected.current) {
+      setSearchList([])
+      fieldOnChange('') // Clear the input if no value is selected
+    }
+    setIsOpen(false)
+    isValueSelected.current = false
+  }
+
+  function handleItemClick(fieldOnChange: (...event: any[]) => void) {
+    return (selectedValue: ItemInterface) => {
+      fieldOnChange(selectedValue.name)
+      isValueSelected.current = true
+      setIsOpen(false)
+      setSearchList([])
+
+      form.setValue(fullDataName, selectedValue);
+    }
   }
 
   const shouldShowDropdown = isOpen && (searchList.length > 0 || isLoading || error)
@@ -98,7 +117,7 @@ export default function Search({
                   value={field.value}
                   onChange={(e) => handleInputChange(e, field.onChange)}
                   onFocus={handleInputFocus}
-                  onBlur={handleInputBlur}
+                  onBlur={() => handleInputBlur(field.onChange)}
                   placeholder={placeholder}
                   disabled={disabled}
                   className="bg-white"
@@ -109,7 +128,7 @@ export default function Search({
 
             {shouldShowDropdown &&
               <Suggester searchList={searchList} isLoading={isLoading} error={error}
-                         onItemClickAction={field.onChange}/>
+                         onItemClickAction={handleItemClick(field.onChange)}/>
             }
           </>
         )}

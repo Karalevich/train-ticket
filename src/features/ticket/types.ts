@@ -1,8 +1,6 @@
 export default interface TicketStateInterface {
-  direction: {
-    from: string;
-    to: string;
-  };
+  departureCity: CityInterface,
+  returnCity: CityInterface,
   date: {
     from: string
     to: string

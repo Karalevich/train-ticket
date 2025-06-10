@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react'
 
 
 export interface ItemInterface {
-  _id: number
+  _id: string
   name: string
 }
 
@@ -13,7 +13,7 @@ export interface SuggesterProps {
   searchList: ItemInterface[]
   isLoading: boolean
   error: string | null
-  onItemClickAction: (value: string) => void
+  onItemClickAction: (value: ItemInterface) => void
 }
 
 export default function Suggester({
@@ -25,7 +25,7 @@ export default function Suggester({
 
 
   const handleItemClick = (item: ItemInterface) => {
-    onItemClickAction(item.name)
+    onItemClickAction(item)
   }
 
   return (
@@ -45,7 +45,7 @@ export default function Suggester({
           searchList.map((item, index) => (
             <button
               key={item._id || index}
-              onClick={() => handleItemClick(item)}
+              onMouseDown={() => handleItemClick(item)}
               type="button"
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors"
             >

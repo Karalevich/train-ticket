@@ -7,9 +7,13 @@ export const fetchDate = createAsyncThunk('ticket/fetchDate', async () => {
 })
 
 const initialState: TicketStateInterface = {
-  direction: {
-    from: '',
-    to: '',
+  departureCity: {
+    _id: '',
+    name: '',
+  },
+  returnCity: {
+    _id: '',
+    name: '',
   },
   date: {
     from: '',
@@ -26,8 +30,11 @@ const ticketSlice = createSlice({
     setDate: (state, action) => {
       state.date = action.payload
     },
-    setDirection: (state, action) => {
-      state.direction = action.payload
+    setDepartureCity: (state, action) => {
+      state.departureCity = action.payload
+    },
+    setReturnCity: (state, action) => {
+      state.returnCity = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -51,5 +58,5 @@ const ticketSlice = createSlice({
   }
 })
 
-export const { setDate, setDirection } = ticketSlice.actions
+export const { setDate, setDepartureCity, setReturnCity } = ticketSlice.actions
 export default ticketSlice.reducer
