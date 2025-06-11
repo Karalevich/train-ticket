@@ -1,6 +1,6 @@
 import type React from 'react'
 import Link from 'next/link'
-import { NavLinkProps } from '@/components/NavLink/types';
+import { NavLinkProps } from '@/components/wrap/NavLink/types';
 
 export function NavLink({ href, children }: NavLinkProps) {
   return (

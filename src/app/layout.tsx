@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import ReduxProvider from '@/app/ReduxProvider';
+import { Header } from '@/components/wrap/HeaderNav/HeaderNav';
+import HeroSection from '@/components/home/HeroSection/HeroSection';
+import Footer from '@/components/wrap/Footer/Footer';
+import { ReactNode } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,17 +23,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                     children,
+                                   }: Readonly<{
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-      <ReduxProvider>{children}</ReduxProvider>
-      </body>
+    <body
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+    >
+    <ReduxProvider>
+      <Header/>
+      <HeroSection/>
+
+      <main>{children}</main>
+
+      <Footer/>
+    </ReduxProvider>
+    </body>
     </html>
   );
 }

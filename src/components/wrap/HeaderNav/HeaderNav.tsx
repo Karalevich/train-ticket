@@ -1,11 +1,11 @@
-import { NavLink } from '@/components/NavLink/NavLink';
+import { NavLink } from '@/components/wrap/NavLink/NavLink';
 import Image from 'next/image'
 
 const navigationItems = [
-  { href: '#about', label: 'About us' },
-  { href: '#how-it-works', label: 'How it works' },
-  { href: '#reviews', label: 'Reviews' },
-  { href: '#contacts', label: 'Contacts' },
+  { href: '/#about', label: 'About us' },
+  { href: '/#how-it-works', label: 'How it works' },
+  { href: '/#reviews', label: 'Reviews' },
+  { href: '#footer', label: 'Contacts' },
 ]
 
 export function Header() {
