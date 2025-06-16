@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import ReduxProvider from '@/app/ReduxProvider';
+import ReduxProvider from '@/app/providers/ReduxProvider';
 import { Header } from '@/components/wrap/HeaderNav/HeaderNav';
 import HeroSection from '@/components/home/HeroSection/HeroSection';
 import Footer from '@/components/wrap/Footer/Footer';
 import { ReactNode } from 'react';
+import QueryProvider from '@/app/providers/QueryProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,14 +33,16 @@ export default function RootLayout({
     <body
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-    <ReduxProvider>
-      <Header/>
-      <HeroSection/>
+    <QueryProvider>
+      <ReduxProvider>
+        <Header/>
+        <HeroSection/>
 
-      <main>{children}</main>
+        <main>{children}</main>
 
-      <Footer/>
-    </ReduxProvider>
+        <Footer/>
+      </ReduxProvider>
+    </QueryProvider>
     </body>
     </html>
   );

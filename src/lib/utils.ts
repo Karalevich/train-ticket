@@ -19,3 +19,23 @@ export function debounce<T extends (...args: any[]) => void>(
   };
   return [debounced, cancel];
 }
+
+// Helper function to format time from timestamp
+export function formatTime(timestamp: number | undefined): string {
+  if (timestamp === undefined) return 'N/A';
+  const date = new Date(timestamp * 1000)
+  return date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+}
+
+// Helper function to format duration from seconds
+export function formatDuration(seconds: number | undefined): string {
+  if (seconds === undefined || seconds < 0) return 'N/A';
+
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  return `${hours}:${minutes.toString().padStart(2, '0')}`
+}

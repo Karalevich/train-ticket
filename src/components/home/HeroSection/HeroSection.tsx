@@ -1,9 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/lib/store';
-import { setDate, setDepartureCity, setReturnCity } from '@/features/ticket/ticketSlice';
 import { addDays } from 'date-fns';
 import Search from '@/components/ui/search';
 import { useForm } from 'react-hook-form'
@@ -11,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { DatePicker } from '@/components/ui/datePicker';
+import { useRouter } from 'next/navigation';
+import { CityInterface } from '@/features/ticket/types';
 
 const citiesEndpoint = 'https://students.netoservices.ru/fe-diplom/routes/cities?name=';
 
@@ -19,9 +18,8 @@ const FormSchema = z.object({
   to: z.string().min(2, 'Required least 2 characters'),
   departure: z.optional(z.date()),
   return: z.optional(z.date()),
-  departureCity: z.any().optional(),
-  returnCity: z.any().optional(),
-
+  departureCity: z.optional(z.custom<CityInterface>()),
+  returnCity: z.optional(z.custom<CityInterface>()),
 }).refine(
   (data) => {
     if (!data.departure || !data.return) return true; // If either date is not provided, skip validation
@@ -34,7 +32,7 @@ const FormSchema = z.object({
 );
 
 export default function HeroSection() {
-  const dispatch = useDispatch<AppDispatch>()
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -47,14 +45,18 @@ export default function HeroSection() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log('Form submitted', data);
 
-    const serializedDate = {
-      from: JSON.stringify(data?.departure || ''),
-      to: JSON.stringify(data?.return || ''),
-    }
+    const filters = {
+      from_city_id: data?.departureCity?._id || '',
+      to_city_id: data?.returnCity?._id || '',
+      date_start: data?.departure ? data.departure.toISOString().split('T')[0] : undefined,
+      date_end: data?.return ? data.return.toISOString().split('T')[0] : undefined,
+    };
 
-    dispatch(setDate(serializedDate));
-    dispatch(setDepartureCity(data.departureCity));
-    dispatch(setReturnCity(data.returnCity));
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value as string);
+    })
+    router.push(`/order?${params.toString()}`);
   }
 
   function disabled(date: Date) {
@@ -67,7 +69,7 @@ export default function HeroSection() {
   return (
     <section
       className="bg-[url('@/assets/images/hero-section.png')]
-      bg-cover bg-center -mt-20 mx-auto px-2 lg:px-16 items-center grid md:grid-cols-[1fr_1.5fr] gap-2 lg:gap-8 w-full"
+      bg-cover bg-center -mt-20 mx-auto px-2 lg:px-16 items-center grid md:grid-cols-[1fr_1.5fr] lg:justify-items-end"
     >
       <h1 className="text-6xl font-bold mb-8 mt-52 md:mb-52 md:mt-64 text-white">
         All Live -<br/>
@@ -75,12 +77,12 @@ export default function HeroSection() {
       </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}
-              className="bg-black/30 backdrop-blur-sm p-6 rounded-lg self-end space-y-8">
+              className="bg-black/30 backdrop-blur-sm p-6 lg:w-[40vw] max-w-[700px] rounded-lg self-end justify-end space-y-8 ">
           <div>
             <div className="grid sm:grid-cols-2 gap-2 items-end">
               <Search form={form} apiEndpoint={citiesEndpoint} placeholder='From'
                       name='from' label='Direction' minSearchLength={2} fullDataName='departureCity'/>
-              <Search form={form} apiEndpoint={citiesEndpoint} placeholder={'To'}
+              <Search form={form} apiEndpoint={citiesEndpoint} placeholder='To'
                       name='to' minSearchLength={2} fullDataName='returnCity'/>
             </div>
           </div>

@@ -1,0 +1,144 @@
+import { ReadonlyURLSearchParams } from 'next/dist/client/components/navigation.react-server';
+import { CityInterface } from "@/features/ticket/types";
+
+export interface TicketFilters {
+  from_city_id: string
+  to_city_id: string
+  date_start?: string
+  date_end?: string
+  date_start_arrival?: string
+  date_end_arrival?: string
+  have_first_class?: boolean
+  have_second_class?: boolean
+  have_third_class?: boolean
+  have_fourth_class?: boolean
+  have_wifi?: boolean
+  have_air_conditioning?: boolean
+  have_express?: boolean
+  price_from?: number
+  price_to?: number
+  start_departure_hour_from?: number
+  start_departure_hour_to?: number
+  start_arrival_hour_from?: number
+  start_arrival_hour_to?: number
+  end_departure_hour_from?: number
+  end_departure_hour_to?: number
+  end_arrival_hour_from?: number
+  end_arrival_hour_to?: number
+  limit?: number
+  offset?: number
+  sort?: 'date' | 'price' | 'duration'
+}
+
+export interface StationInfo {
+  datetime: number
+  railway_station_name: string
+  city: CityInterface
+}
+
+export interface TrainInfo {
+  // Add train-specific fields if needed
+  // Example: name: string; number: string;
+  [key: string]: any
+}
+
+export interface PriceInfo {
+  first_class?: number
+  second_class?: number
+  third_class?: number
+  fourth_class?: number
+}
+
+export interface SeatsInfo {
+  first_class?: number
+  second_class?: number
+  third_class?: number
+  fourth_class?: number
+}
+
+export interface ArrivalDepartureInfo {
+  have_first_class: boolean
+  have_second_class: boolean
+  have_third_class: boolean
+  have_fourth_class: boolean
+  have_wifi: boolean
+  have_air_conditioning: boolean
+  is_express: boolean
+  min_price: number
+  train: TrainInfo
+  from: StationInfo
+  to: StationInfo
+  duration: number
+  price_info: PriceInfo
+  seats_info: SeatsInfo
+}
+
+export interface Ticket {
+  have_first_class: boolean
+  have_second_class: boolean
+  have_third_class: boolean
+  have_fourth_class: boolean
+  have_wifi: boolean
+  have_air_conditioning: boolean
+  is_express: boolean
+  min_price: number
+  arrival?: ArrivalDepartureInfo
+  departure: ArrivalDepartureInfo
+  total_avaliable_seats: number
+}
+
+export interface TicketsResponse {
+  total_count: number
+  items: Ticket[]
+}
+
+export async function fetchTickets(filters: TicketFilters): Promise<TicketsResponse> {
+  const params = new URLSearchParams()
+
+  // Add all filters to URL params
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, value.toString())
+    }
+  })
+
+  const response = await fetch(`https://students.netoservices.ru/fe-diplom/routes?${params}`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch tickets')
+  }
+
+  return response.json()
+}
+
+// Helper function to parse search params
+export function parseSearchParams(searchParams: ReadonlyURLSearchParams): TicketFilters {
+  return {
+    from_city_id: searchParams.get('from_city_id')!,
+    to_city_id: searchParams.get('to_city_id')!,
+    date_start: searchParams.has('date_start') ? searchParams.get('date_start')! : undefined,
+    date_end: searchParams.has('date_end') ? searchParams.get('date_end')! : undefined,
+    date_start_arrival: searchParams.has('date_start_arrival') ? searchParams.get('date_start_arrival')! : undefined,
+    date_end_arrival: searchParams.has('date_end_arrival') ? searchParams.get('date_end_arrival')! : undefined,
+    have_first_class: searchParams.has('have_first_class') ? searchParams.get('have_first_class') === 'true' : undefined,
+    have_second_class: searchParams.has('have_second_class') ? searchParams.get('have_second_class') === 'true' : undefined,
+    have_third_class: searchParams.has('have_third_class') ? searchParams.get('have_third_class') === 'true' : undefined,
+    have_fourth_class: searchParams.has('have_fourth_class') ? searchParams.get('have_fourth_class') === 'true' : undefined,
+    have_wifi: searchParams.has('have_wifi') ? searchParams.get('have_wifi') === 'true' : undefined,
+    have_air_conditioning: searchParams.has('have_air_conditioning') ? searchParams.get('have_air_conditioning') === 'true' : undefined,
+    have_express: searchParams.has('have_express') ? searchParams.get('have_express') === 'true' : undefined,
+    price_from: searchParams.has('price_from') ? Number.parseInt(searchParams.get('price_from') as string) : undefined,
+    price_to: searchParams.has('price_to') ? Number.parseInt(searchParams.get('price_to') as string) : undefined,
+    start_departure_hour_from: searchParams.has('start_departure_hour_from') ? Number.parseInt(searchParams.get('start_departure_hour_from') as string) : undefined,
+    start_departure_hour_to: searchParams.has('start_departure_hour_to') ? Number.parseInt(searchParams.get('start_departure_hour_to') as string) : undefined,
+    start_arrival_hour_from: searchParams.has('start_arrival_hour_from') ? Number.parseInt(searchParams.get('start_arrival_hour_from') as string) : undefined,
+    start_arrival_hour_to: searchParams.has('start_arrival_hour_to') ? Number.parseInt(searchParams.get('start_arrival_hour_to') as string) : undefined,
+    end_departure_hour_from: searchParams.has('end_departure_hour_from') ? Number.parseInt(searchParams.get('end_departure_hour_from') as string) : undefined,
+    end_departure_hour_to: searchParams.has('end_departure_hour_to') ? Number.parseInt(searchParams.get('end_departure_hour_to') as string) : undefined,
+    end_arrival_hour_from: searchParams.has('end_arrival_hour_from') ? Number.parseInt(searchParams.get('end_arrival_hour_from') as string) : undefined,
+    end_arrival_hour_to: searchParams.has('end_arrival_hour_to') ? Number.parseInt(searchParams.get('end_arrival_hour_to') as string) : undefined,
+    limit: searchParams.has('limit') ? Number.parseInt(searchParams.get('limit') as string) : undefined,
+    offset: searchParams.has('offset') ? Number.parseInt(searchParams.get('offset') as string) : undefined,
+    sort: searchParams.has('sort') ? (searchParams.get('sort') as 'date' | 'price' | 'duration') : undefined,
+  }
+}

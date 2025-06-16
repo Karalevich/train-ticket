@@ -1,11 +1,13 @@
 import { Suspense } from 'react'
-import { Skeleton } from '@/components/ui/skeleton'
 import TicketList from '@/components/order/TicketList/TicketList';
 import BookingStepper from '@/components/order/BookingStepper/BookingStepper';
 import FilterSidebar from '@/components/order/FilterSidebar/FilterSidebar';
 import RecentTickets from '@/components/order/RecentTickets/RecentTickets';
+import TicketListSkeleton from '@/app/order/loading';
+import TicketListControls from '@/components/order/TicketListControls/TicketListControls';
 
-export default function TicketsPage() {
+
+export default async function TicketsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <BookingStepper currentStep={1}/>
@@ -18,26 +20,17 @@ export default function TicketsPage() {
           </div>
 
           <div className="w-full lg:w-3/4">
-            <Suspense fallback={<TicketListSkeleton/>}>
-              <TicketList/>
-            </Suspense>
+
+            <div className="space-y-4">
+              <TicketListControls/>
+              <Suspense fallback={<TicketListSkeleton/>}>
+                <TicketList/>
+              </Suspense>
+            </div>
+
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function TicketListSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-8 w-32"/>
-        <Skeleton className="h-8 w-48"/>
-      </div>
-      {[...Array(3)].map((_, i) => (
-        <Skeleton key={i} className="h-64 w-full rounded-md"/>
-      ))}
     </div>
   )
 }
