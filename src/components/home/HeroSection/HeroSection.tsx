@@ -43,13 +43,12 @@ export default function HeroSection() {
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('Form submitted', data);
-
     const filters = {
       from_city_id: data?.departureCity?._id || '',
       to_city_id: data?.returnCity?._id || '',
       date_start: data?.departure ? data.departure.toISOString().split('T')[0] : undefined,
       date_end: data?.return ? data.return.toISOString().split('T')[0] : undefined,
+      limit: 5,
     };
 
     const params = new URLSearchParams();

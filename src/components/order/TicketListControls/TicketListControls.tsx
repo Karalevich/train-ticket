@@ -1,21 +1,26 @@
 'use client'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { parseSearchParams } from '@/lib/api';
 
 export default function TicketListControls() {
   const searchParams = useSearchParams()
+  const router = useRouter();
   const { sort, limit } = parseSearchParams(searchParams)
   const totalTickets = 20
 
-
   function setSortBy(value: string) {
-
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set('sort', value || 'min_price');
+    router.push(`/order?${params.toString()}`);
   }
 
   function setPerPage(value: string) {
-
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set('limit', value || '5');
+    params.delete('offset')
+    router.push(`/order?${params.toString()}`);
   }
 
   return (
@@ -29,8 +34,8 @@ export default function TicketListControls() {
               <SelectValue placeholder="Sort by"/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="time">Time</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="min_price">Price</SelectItem>
               <SelectItem value="duration">Duration</SelectItem>
             </SelectContent>
           </Select>

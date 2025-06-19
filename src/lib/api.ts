@@ -1,5 +1,5 @@
 import { ReadonlyURLSearchParams } from 'next/dist/client/components/navigation.react-server';
-import { CityInterface } from "@/features/ticket/types";
+import { CityInterface } from '@/features/ticket/types';
 
 export interface TicketFilters {
   from_city_id: string
@@ -27,7 +27,7 @@ export interface TicketFilters {
   end_arrival_hour_to?: number
   limit?: number
   offset?: number
-  sort?: 'date' | 'price' | 'duration'
+  sort?: 'date' | 'min_price' | 'duration'
 }
 
 export interface StationInfo {
@@ -139,6 +139,6 @@ export function parseSearchParams(searchParams: ReadonlyURLSearchParams): Ticket
     end_arrival_hour_to: searchParams.has('end_arrival_hour_to') ? Number.parseInt(searchParams.get('end_arrival_hour_to') as string) : undefined,
     limit: searchParams.has('limit') ? Number.parseInt(searchParams.get('limit') as string) : undefined,
     offset: searchParams.has('offset') ? Number.parseInt(searchParams.get('offset') as string) : undefined,
-    sort: searchParams.has('sort') ? (searchParams.get('sort') as 'date' | 'price' | 'duration') : undefined,
+    sort: searchParams.has('sort') ? (searchParams.get('sort') as 'date' | 'min_price' | 'duration') : undefined,
   }
 }

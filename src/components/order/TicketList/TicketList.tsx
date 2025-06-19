@@ -13,7 +13,7 @@ export default function TicketList() {
 
 
   const { data } = useSuspenseQuery({
-    queryKey: ['posts'],
+    queryKey: ['tickets', filters],
     queryFn: () => fetchTickets(filters),
   });
 
