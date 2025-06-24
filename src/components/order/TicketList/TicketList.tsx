@@ -17,8 +17,6 @@ export default function TicketList() {
     queryFn: () => fetchTickets(filters),
   });
 
-  const currentPage = 1 + (filters.offset || 0 / (filters.limit || 5));
-
   return (
     <>
       {data?.items.map((ticket, index) => (
@@ -27,9 +25,7 @@ export default function TicketList() {
 
       <div className="flex justify-center mt-8">
         <OrderPagination
-          data={data}
-          filters={filters}
-          currentPage={currentPage}
+          totalCount={data.total_count}
         />
       </div>
     </>

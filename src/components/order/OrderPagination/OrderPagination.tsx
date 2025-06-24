@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Pagination,
   PaginationContent,
@@ -7,33 +9,53 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { parseSearchParams } from '@/lib/api';
 
 type OrderPaginationProps = {
-  data: any;
-  filters: any;
-  currentPage: number;
+  totalCount: number;
+  maxPagesToShow?: number;
 };
 
-export default function OrderPagination({ data, filters, currentPage }: OrderPaginationProps) {
-  if (!data?.total_count || data.total_count <= 0) {
+export default function OrderPagination({ totalCount, maxPagesToShow = 3 }: OrderPaginationProps) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const {limit = 5, offset = 0} = parseSearchParams(searchParams)
+
+  if (totalCount <= limit) {
     return null;
   }
 
-  const totalPages = Math.ceil(data.total_count / (filters.limit || 5));
-  const maxPagesToShow = 5;
-  const current = currentPage;
-  let start = Math.max(1, current - Math.floor(maxPagesToShow / 2));
+  const totalPages = Math.ceil(totalCount / limit) -1
+  let currentPage = offset / limit;
+  if (currentPage === 0) currentPage = 1;
+
+  let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
   let end = Math.min(totalPages, start + maxPagesToShow - 1);
   if (end - start < maxPagesToShow - 1) {
     start = Math.max(1, end - maxPagesToShow + 1);
   }
+
+  const createPageURL = (pageNumber: number) => {
+    if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) {
+      return '#'; // Invalid page number
+    }
+    const params = new URLSearchParams(searchParams);
+    const offset = limit ? pageNumber * limit : 0;
+    params.set('offset', offset.toString());
+    if (pageNumber === 1) {
+      params.delete('offset');
+    }
+    return `${pathname}?${params.toString()}`;
+  };
+
 
   const pages = [];
 
   if (start > 1) {
     pages.push(
       <PaginationItem key={1}>
-        <PaginationLink href="#" isActive={1 === current}>
+        <PaginationLink href={createPageURL(1)} isActive={1 === currentPage}>
           1
         </PaginationLink>
       </PaginationItem>
@@ -41,7 +63,7 @@ export default function OrderPagination({ data, filters, currentPage }: OrderPag
     if (start > 2) {
       pages.push(
         <PaginationItem key="start-ellipsis">
-          <PaginationEllipsis />
+          <PaginationEllipsis/>
         </PaginationItem>
       );
     }
@@ -50,7 +72,7 @@ export default function OrderPagination({ data, filters, currentPage }: OrderPag
   for (let i = start; i <= end; i++) {
     pages.push(
       <PaginationItem key={i}>
-        <PaginationLink href="#" isActive={i === current}>
+        <PaginationLink href={createPageURL(i)} isActive={i === currentPage}>
           {i}
         </PaginationLink>
       </PaginationItem>
@@ -61,13 +83,13 @@ export default function OrderPagination({ data, filters, currentPage }: OrderPag
     if (end < totalPages - 1) {
       pages.push(
         <PaginationItem key="end-ellipsis">
-          <PaginationEllipsis />
+          <PaginationEllipsis/>
         </PaginationItem>
       );
     }
     pages.push(
       <PaginationItem key={totalPages}>
-        <PaginationLink href="#" isActive={totalPages === current}>
+        <PaginationLink href={createPageURL(totalPages)} isActive={totalPages === currentPage}>
           {totalPages}
         </PaginationLink>
       </PaginationItem>
@@ -78,11 +100,11 @@ export default function OrderPagination({ data, filters, currentPage }: OrderPag
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href="#" />
+          <PaginationPrevious href={createPageURL(currentPage - 1)} aria-disabled={currentPage === 1}/>
         </PaginationItem>
         {pages}
         <PaginationItem>
-          <PaginationNext href="#" />
+          <PaginationNext href={createPageURL(currentPage + 1)}/>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

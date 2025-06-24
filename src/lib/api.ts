@@ -42,18 +42,24 @@ export interface TrainInfo {
   [key: string]: any
 }
 
+export interface PriceRange {
+  bottom_price?: number
+  price?: number
+  top_price?: number
+}
+
 export interface PriceInfo {
-  first_class?: number
-  second_class?: number
-  third_class?: number
-  fourth_class?: number
+  first?: PriceRange
+  second?: PriceRange
+  third?: PriceRange
+  fourth?: PriceRange
 }
 
 export interface SeatsInfo {
-  first_class?: number
-  second_class?: number
-  third_class?: number
-  fourth_class?: number
+  first?: number
+  second?: number
+  third?: number
+  fourth?: number
 }
 
 export interface ArrivalDepartureInfo {
@@ -70,7 +76,7 @@ export interface ArrivalDepartureInfo {
   to: StationInfo
   duration: number
   price_info: PriceInfo
-  seats_info: SeatsInfo
+  available_seats_info: SeatsInfo
 }
 
 export interface Ticket {
@@ -84,7 +90,7 @@ export interface Ticket {
   min_price: number
   arrival?: ArrivalDepartureInfo
   departure: ArrivalDepartureInfo
-  total_avaliable_seats: number
+  available_seats: number
 }
 
 export interface TicketsResponse {

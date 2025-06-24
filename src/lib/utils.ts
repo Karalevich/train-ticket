@@ -21,14 +21,12 @@ export function debounce<T extends (...args: any[]) => void>(
 }
 
 // Helper function to format time from timestamp
-export function formatTime(timestamp: number | undefined): string {
-  if (timestamp === undefined) return 'N/A';
+export function formatTime(timestamp: number | undefined): [string, string]  {
+  if (timestamp === undefined) return ['N/A', 'N/A'];
   const date = new Date(timestamp * 1000)
-  return date.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  const dateStr = date.toLocaleDateString('en-GB');
+  const timeStr = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return [dateStr, timeStr];
 }
 
 // Helper function to format duration from seconds
@@ -37,5 +35,5 @@ export function formatDuration(seconds: number | undefined): string {
 
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
-  return `${hours}:${minutes.toString().padStart(2, '0')}`
+  return `${hours}:${minutes.toString().padStart(1, '0')}`
 }

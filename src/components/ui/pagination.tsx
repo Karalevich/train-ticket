@@ -59,6 +59,7 @@ function PaginationLink({
           variant: isActive ? 'outline' : 'ghost',
           size,
         }),
+        isActive && 'bg-amber-500 text-white hover:text-white focus:text-white',
         className
       )}
       href={props.href as string}
