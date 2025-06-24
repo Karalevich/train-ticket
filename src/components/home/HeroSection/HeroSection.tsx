@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button';
-import { addDays } from 'date-fns';
 import Search from '@/components/ui/search';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +9,7 @@ import { Form } from '@/components/ui/form';
 import { DatePicker } from '@/components/ui/datePicker';
 import { useRouter } from 'next/navigation';
 import { CityInterface } from '@/features/ticket/types';
+import { disabled } from '@/lib/utils';
 
 const citiesEndpoint = 'https://students.netoservices.ru/fe-diplom/routes/cities?name=';
 
@@ -56,13 +56,6 @@ export default function HeroSection() {
       if (value) params.append(key, value as string);
     })
     router.push(`/order?${params.toString()}`);
-  }
-
-  function disabled(date: Date) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return date < today || date > addDays(today, 90);
   }
 
   return (

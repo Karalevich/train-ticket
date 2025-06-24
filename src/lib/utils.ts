@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { addDays } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -36,4 +37,11 @@ export function formatDuration(seconds: number | undefined): string {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
   return `${hours}:${minutes.toString().padStart(1, '0')}`
+}
+
+export function disabled(date: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return date < today || date > addDays(today, 90);
 }

@@ -1,88 +1,98 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar } from '@/components/ui/calendar'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
+import { DatePicker } from '@/components/ui/datePicker';
+import { disabled } from '@/lib/utils';
+import { Form } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { parseSearchParams } from '@/lib/api';
+
+const FormSchema = z.object({
+  departure: z.optional(z.date()),
+  return: z.optional(z.date()),
+}).refine(
+  (data) => {
+    if (!data.departure || !data.return) return true; // If either date is not provided, skip validation
+    return data.return >= data.departure;
+  },
+  {
+    message: 'Return date must follow departure',
+    path: ['return'],
+  }
+);
+
 
 export default function FilterSidebar() {
-  const [departureDate, setDepartureDate] = useState<Date | undefined>(new Date())
-  const [returnDate, setReturnDate] = useState<Date | undefined>()
+  const router = useRouter();
+  const searchParams = useSearchParams()
+  const { date_start, date_end } = parseSearchParams(searchParams)
+
   const [priceRange, setPriceRange] = useState([1920, 7000])
 
-  return (
-    <div className="bg-gray-800 text-white p-4 rounded-md space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="departure-date" className="text-white">
-          Travel Date
-        </Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-start text-left font-normal bg-white text-black hover:bg-gray-100"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4"/>
-              {departureDate ? format(departureDate, 'PP') : 'Select date'}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white">
-            <Calendar mode="single" selected={departureDate} onSelect={setDepartureDate} initialFocus/>
-          </PopoverContent>
-        </Popover>
-      </div>
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      departure: date_start ? new Date(`${date_start}T00:00:00`) : undefined,
+      return: date_end ? new Date(`${date_end}T00:00:00`) : undefined,
+    },
+  })
 
-      <div className="space-y-2">
-        <Label htmlFor="return-date" className="text-white">
-          Return Date
-        </Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-start text-left font-normal bg-white text-black hover:bg-gray-100"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4"/>
-              {returnDate ? format(returnDate, 'PP') : 'Select date'}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white">
-            <Calendar mode="single" selected={returnDate} onSelect={setReturnDate} initialFocus/>
-          </PopoverContent>
-        </Popover>
-      </div>
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    const filters = {
+      date_start: data?.departure ? data.departure.toISOString().split('T')[0] : undefined,
+      date_end: data?.return ? data.return.toISOString().split('T')[0] : undefined,
+      limit: 5,
+    };
+
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value as string);
+    })
+   // router.push(`/order?${params.toString()}`);
+  }
+
+
+  return (
+    <aside className="bg-gray-800 text-white p-4 rounded-md space-y-4">
+      <Form {...form}>
+        <form  className="space-y-2 fles flex-col gap-2">
+          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Departure Date' name='departure'/>
+          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Return Date' name='return'/>
+        </form>
+      </Form>
 
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="coupe" className="text-white">
-            Coupe
+            First Class
           </Label>
           <Switch id="coupe"/>
         </div>
 
         <div className="flex items-center justify-between">
           <Label htmlFor="platzcard" className="text-white">
-            Platzcard
+            Second Class
           </Label>
           <Switch id="platzcard"/>
         </div>
 
         <div className="flex items-center justify-between">
           <Label htmlFor="sitting" className="text-white">
-            Sitting
+            Third Class
           </Label>
           <Switch id="sitting"/>
         </div>
 
         <div className="flex items-center justify-between">
           <Label htmlFor="luxe" className="text-white">
-            Luxe
+            Forth Class
           </Label>
           <Switch id="luxe"/>
         </div>
@@ -138,6 +148,6 @@ export default function FilterSidebar() {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-    </div>
+    </aside>
   )
 }
