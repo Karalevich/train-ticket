@@ -55,9 +55,9 @@ export default function TicketCard({ ticket }: TicketCardProps) {
             </div>
 
             {/* Seat availability and pricing */}
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col justify-between">
               <ClassOptions ticket={ticket}/>
-              <div className="mt-4">
+              <div>
                 <div className="flex gap-2 justify-end mb-2">
                   {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
                   {ticket.departure.have_air_conditioning && (
@@ -69,7 +69,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
                   Total available seats: {ticket.available_seats}
                 </div>
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                  Select seats - from £{ticket.min_price}
+                  Select seats - from ${ticket.min_price}
                 </Button>
               </div>
             </div>

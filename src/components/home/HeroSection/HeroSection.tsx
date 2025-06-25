@@ -7,9 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { DatePicker } from '@/components/ui/datePicker';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CityInterface } from '@/features/ticket/types';
 import { disabled } from '@/lib/utils';
+import { parseSearchParams } from '@/lib/api';
 
 const citiesEndpoint = 'https://students.netoservices.ru/fe-diplom/routes/cities?name=';
 
@@ -33,12 +34,25 @@ const FormSchema = z.object({
 
 export default function HeroSection() {
   const router = useRouter();
+  const searchParams = useSearchParams()
+  const {
+    date_start,
+    date_end,
+    from_city_name,
+    to_city_name,
+    from_city_id,
+    to_city_id
+  } = parseSearchParams(searchParams)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      from: '',
-      to: '',
+      from: from_city_name || '',
+      to: to_city_name || '',
+      departureCity: { name: from_city_name, _id: from_city_id },
+      returnCity: { name: to_city_name, _id: to_city_id },
+      departure: date_start ? new Date(`${date_start}T00:00:00`) : undefined,
+      return: date_end ? new Date(`${date_end}T00:00:00`) : undefined,
     },
   })
 
@@ -46,6 +60,8 @@ export default function HeroSection() {
     const filters = {
       from_city_id: data?.departureCity?._id || '',
       to_city_id: data?.returnCity?._id || '',
+      from_city_name: data?.departureCity?.name || '',
+      to_city_name: data?.returnCity?.name || '',
       date_start: data?.departure ? data.departure.toISOString().split('T')[0] : undefined,
       date_end: data?.return ? data.return.toISOString().split('T')[0] : undefined,
       limit: 5,

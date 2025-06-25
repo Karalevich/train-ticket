@@ -28,11 +28,19 @@ const FormSchema = z.object({
   }
 );
 
-
 export default function FilterSidebar() {
   const router = useRouter();
   const searchParams = useSearchParams()
-  const { date_start, date_end } = parseSearchParams(searchParams)
+  const {
+    date_start,
+    date_end,
+    have_first_class,
+    have_second_class,
+    have_third_class,
+    have_fourth_class,
+    have_wifi,
+    have_express
+  } = parseSearchParams(searchParams)
 
   const [priceRange, setPriceRange] = useState([1920, 7000])
 
@@ -41,75 +49,57 @@ export default function FilterSidebar() {
     defaultValues: {
       departure: date_start ? new Date(`${date_start}T00:00:00`) : undefined,
       return: date_end ? new Date(`${date_end}T00:00:00`) : undefined,
-    },
+    }
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    const filters = {
-      date_start: data?.departure ? data.departure.toISOString().split('T')[0] : undefined,
-      date_end: data?.return ? data.return.toISOString().split('T')[0] : undefined,
-      limit: 5,
-    };
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set('date_start', data?.departure ? data.departure.toISOString().split('T')[0] : '');
+    params.set('date_end', data?.return ? data.return.toISOString().split('T')[0] : '');
 
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) params.append(key, value as string);
-    })
-   // router.push(`/order?${params.toString()}`);
+    router.push(`/order?${params.toString()}`);
   }
 
+  function onSwitchChange(value: boolean, id: string) {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    if (value) {
+      params.set(id, 'true');
+    } else {
+      params.delete(id);
+    }
+    router.push(`/order?${params.toString()}`);
+  }
+
+  const filterOptions = [
+    { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
+    { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
+    { id: 'have_third_class', label: 'Third Class', defaultChecked: have_third_class || false },
+    { id: 'have_fourth_class', label: 'Forth Class', defaultChecked: have_fourth_class || false },
+    { id: 'have_wifi', label: 'Wi-Fi', defaultChecked: have_wifi || false },
+    { id: 'have_express', label: 'Express', defaultChecked: have_express || false },
+  ];
 
   return (
     <aside className="bg-gray-800 text-white p-4 rounded-md space-y-4">
       <Form {...form}>
-        <form  className="space-y-2 fles flex-col gap-2">
-          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Departure Date' name='departure'/>
-          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Return Date' name='return'/>
+        <form className="space-y-2 fles flex-col gap-2">
+          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Departure Date'
+                      name='departure'/>
+          <DatePicker form={form} disabled={disabled} onChange={form.handleSubmit(onSubmit)} label='Return Date'
+                      name='return'/>
         </form>
       </Form>
 
       <div className="space-y-3 pt-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="coupe" className="text-white">
-            First Class
-          </Label>
-          <Switch id="coupe"/>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="platzcard" className="text-white">
-            Second Class
-          </Label>
-          <Switch id="platzcard"/>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="sitting" className="text-white">
-            Third Class
-          </Label>
-          <Switch id="sitting"/>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="luxe" className="text-white">
-            Forth Class
-          </Label>
-          <Switch id="luxe"/>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="wifi" className="text-white">
-            Wi-Fi
-          </Label>
-          <Switch id="wifi" defaultChecked/>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="express" className="text-white">
-            Express
-          </Label>
-          <Switch id="express"/>
-        </div>
+        {filterOptions.map(option => (
+          <div className="flex items-center justify-between" key={option.id}>
+            <Label htmlFor={option.id} className="text-white">
+              {option.label}
+            </Label>
+            <Switch id={option.id} checked={option.defaultChecked}
+                    onCheckedChange={(value) => onSwitchChange(value, option.id)}/>
+          </div>
+        ))}
       </div>
 
       <div className="space-y-4 pt-2">

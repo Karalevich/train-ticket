@@ -4,6 +4,8 @@ import { CityInterface } from '@/features/ticket/types';
 export interface TicketFilters {
   from_city_id: string
   to_city_id: string
+  from_city_name: string
+  to_city_name: string
   date_start?: string
   date_end?: string
   date_start_arrival?: string
@@ -122,6 +124,8 @@ export function parseSearchParams(searchParams: ReadonlyURLSearchParams): Ticket
   return {
     from_city_id: searchParams.get('from_city_id')!,
     to_city_id: searchParams.get('to_city_id')!,
+    from_city_name: searchParams.get('from_city_name')!,
+    to_city_name: searchParams.get('to_city_name')!,
     date_start: searchParams.has('date_start') ? searchParams.get('date_start')! : undefined,
     date_end: searchParams.has('date_end') ? searchParams.get('date_end')! : undefined,
     date_start_arrival: searchParams.has('date_start_arrival') ? searchParams.get('date_start_arrival')! : undefined,
