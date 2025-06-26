@@ -3,12 +3,14 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { parseSearchParams } from '@/lib/api';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 
 export default function TicketListControls() {
   const searchParams = useSearchParams()
   const router = useRouter();
   const { sort, limit } = parseSearchParams(searchParams)
-  const totalTickets = 20
+  const totalTickets = useSelector((state: RootState) => state.tickets.totalCount)
 
   function setSortBy(value: string) {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
@@ -24,9 +26,9 @@ export default function TicketListControls() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-md border">
-      <div className="text-sm text-gray-500 mb-2 sm:mb-0">Found: {totalTickets}</div>
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center">
+    <section className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-md border">
+      <span className="text-sm text-gray-500 mb-2 sm:mb-0">Found: {totalTickets}</span>
+      <article className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center">
         <div className="flex items-center gap-2">
           <span className="text-sm whitespace-nowrap">Sort by:</span>
           <Select value={sort} onValueChange={setSortBy}>
@@ -53,7 +55,7 @@ export default function TicketListControls() {
             </SelectContent>
           </Select>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   )
 }

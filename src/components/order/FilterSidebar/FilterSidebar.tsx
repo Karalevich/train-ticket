@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { parseSearchParams } from '@/lib/api';
+import { Separator } from '@/components/ui/separator';
 
 const FormSchema = z.object({
   departure: z.optional(z.date()),
@@ -43,6 +44,15 @@ export default function FilterSidebar() {
   } = parseSearchParams(searchParams)
 
   const [priceRange, setPriceRange] = useState([1920, 7000])
+  const [filterOptions, setFilterOptions] = useState([
+    { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
+    { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
+    { id: 'have_third_class', label: 'Third Class', defaultChecked: have_third_class || false },
+    { id: 'have_fourth_class', label: 'Forth Class', defaultChecked: have_fourth_class || false },
+    { id: 'have_wifi', label: 'Wi-Fi', defaultChecked: have_wifi || false },
+    { id: 'have_express', label: 'Express', defaultChecked: have_express || false },
+  ])
+
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -67,17 +77,10 @@ export default function FilterSidebar() {
     } else {
       params.delete(id);
     }
-    router.push(`/order?${params.toString()}`);
+    setFilterOptions(prev => prev.map(option => option.id === id ? { ...option, defaultChecked: value } : option));
+    router.push(`/order?${params.toString()}`)
   }
 
-  const filterOptions = [
-    { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
-    { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
-    { id: 'have_third_class', label: 'Third Class', defaultChecked: have_third_class || false },
-    { id: 'have_fourth_class', label: 'Forth Class', defaultChecked: have_fourth_class || false },
-    { id: 'have_wifi', label: 'Wi-Fi', defaultChecked: have_wifi || false },
-    { id: 'have_express', label: 'Express', defaultChecked: have_express || false },
-  ];
 
   return (
     <aside className="bg-gray-800 text-white p-4 rounded-md space-y-4">
@@ -90,6 +93,8 @@ export default function FilterSidebar() {
         </form>
       </Form>
 
+      <Separator />
+
       <div className="space-y-3 pt-2">
         {filterOptions.map(option => (
           <div className="flex items-center justify-between" key={option.id}>
@@ -101,6 +106,8 @@ export default function FilterSidebar() {
           </div>
         ))}
       </div>
+
+      <Separator />
 
       <div className="space-y-4 pt-2">
         <h3 className="text-lg font-medium">Price</h3>

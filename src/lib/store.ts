@@ -3,7 +3,7 @@ import ticketSlice from '@/features/ticket/ticketSlice'
 
 export const store = configureStore({
   reducer: {
-    ticket: ticketSlice,
+    tickets: ticketSlice,
   },
 })
 

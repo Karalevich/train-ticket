@@ -1,12 +1,5 @@
 export default interface TicketStateInterface {
-  departureCity: CityInterface,
-  returnCity: CityInterface,
-  date: {
-    from: string
-    to: string
-  };
-  loading: boolean;
-  error: string | null;
+  totalCount: number
 }
 
 export interface CityInterface {

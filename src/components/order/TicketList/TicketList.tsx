@@ -5,17 +5,25 @@ import { useSearchParams } from 'next/navigation';
 import { fetchTickets, parseSearchParams } from '@/lib/api';
 import OrderPagination from '@/components/order/OrderPagination/OrderPagination';
 import TicketCard from '@/components/order/TicketCard/TicketCard';
+import { useDispatch } from 'react-redux';
+import { useLayoutEffect } from 'react';
+import { setTotalCount } from '@/features/ticket/ticketSlice';
 
 
 export default function TicketList() {
   const searchParams = useSearchParams()
   const filters = parseSearchParams(searchParams)
+  const dispatch = useDispatch()
 
 
   const { data } = useSuspenseQuery({
     queryKey: ['tickets', filters],
     queryFn: () => fetchTickets(filters),
-  });
+  })
+
+  useLayoutEffect(() => {
+    dispatch(setTotalCount(Number(data.total_count)));
+  }, [data, dispatch]);
 
   return (
     <>
