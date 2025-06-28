@@ -119,6 +119,16 @@ export async function fetchTickets(filters: TicketFilters): Promise<TicketsRespo
   return response.json()
 }
 
+export async function fetchLastRoutes(): Promise<Ticket[]> {
+  const response = await fetch('https://students.netoservices.ru/fe-diplom/routes/last')
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch last tickets')
+  }
+
+  return response.json()
+}
+
 // Helper function to parse search params
 export function parseSearchParams(searchParams: ReadonlyURLSearchParams): TicketFilters {
   return {

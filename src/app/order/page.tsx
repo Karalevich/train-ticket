@@ -5,9 +5,13 @@ import FilterSidebar from '@/components/order/FilterSidebar/FilterSidebar';
 import RecentTickets from '@/components/order/RecentTickets/RecentTickets';
 import TicketListSkeleton from '@/app/order/loading';
 import TicketListControls from '@/components/order/TicketListControls/TicketListControls';
+import { TicketFilters } from '@/lib/api';
+import { TotalTickets } from '@/components/order/TotalTickets/TotalTickets';
 
 
-export default async function TicketsPage() {
+export default async function TicketsPage({ searchParams }: { searchParams: TicketFilters }) {
+  const filters = await searchParams
+
   return (
     <div className="min-h-screen bg-gray-50">
       <BookingStepper currentStep={1}/>
@@ -22,9 +26,13 @@ export default async function TicketsPage() {
           <div className="w-full lg:w-3/4">
 
             <div className="space-y-4">
-              <TicketListControls/>
+              <section
+                className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-md border">
+                <TotalTickets filters={filters}/>
+                <TicketListControls/>
+              </section>
               <Suspense fallback={<TicketListSkeleton/>}>
-                <TicketList/>
+                <TicketList filters={filters}/>
               </Suspense>
             </div>
 
