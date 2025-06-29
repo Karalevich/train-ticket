@@ -10,68 +10,66 @@ interface TicketCardProps {
 
 export default function TicketCard({ ticket }: TicketCardProps) {
   return (
-    <div className="bg-white rounded-md border overflow-hidden">
-      <div className="grid grid-cols-12 gap-0">
-        {/* Train info column */}
-        <div className="col-span-3 bg-gray-100 p-4 flex flex-col items-center justify-center">
-          <Train className="h-12 w-12 text-gray-500 mb-4"/>
-          <div className="text-center">
-            <p className="text-xl font-bold">{ticket.departure.train.name || 'N/A'}</p>
-            <p className="text-sm text-gray-500">
-              {ticket.departure.from.city.name} → {ticket.departure.to.city.name}
-            </p>
-            {ticket.is_express && (
-              <div
-                className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                <Zap className="w-3 h-3 mr-1"/>
-                Express
-              </div>
+    <div className="bg-white rounded-md border overflow-hidden grid grid-cols-12 gap-0">
+      {/* Train info column */}
+      <div className="col-span-3 bg-gray-100 p-4 flex flex-col items-center justify-center">
+        <Train className="h-12 w-12 text-gray-500 mb-4"/>
+        <div className="text-center">
+          <p className="text-xl font-bold">{ticket.departure.train.name || 'N/A'}</p>
+          <p className="text-sm text-gray-500">
+            {ticket.departure.from.city.name} → {ticket.departure.to.city.name}
+          </p>
+          {ticket.is_express && (
+            <div
+              className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
+              <Zap className="w-3 h-3 mr-1"/>
+              Express
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Schedule column */}
+      <div className="col-span-9 p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Time and route info */}
+          <div className="space-y-4">
+            {/* Outbound journey */}
+            <JourneyInfo
+              from={ticket.departure.from}
+              to={ticket.departure.to}
+              duration={ticket.departure.duration}
+              direction="outbound"
+            />
+
+            {/* Return journey */}
+            {ticket.arrival && (
+              <JourneyInfo
+                from={ticket.arrival.from}
+                to={ticket.arrival.to}
+                duration={ticket.arrival.duration}
+                direction="return"
+              />
             )}
           </div>
-        </div>
 
-        {/* Schedule column */}
-        <div className="col-span-9 p-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Time and route info */}
-            <div className="space-y-4">
-              {/* Outbound journey */}
-              <JourneyInfo
-                from={ticket.departure.from}
-                to={ticket.departure.to}
-                duration={ticket.departure.duration}
-                direction="outbound"
-              />
-
-              {/* Return journey */}
-              {ticket.arrival && (
-                <JourneyInfo
-                  from={ticket.arrival.from}
-                  to={ticket.arrival.to}
-                  duration={ticket.arrival.duration}
-                  direction="return"
-                />
-              )}
-            </div>
-
-            {/* Seat availability and pricing */}
-            <div className="space-y-2 flex flex-col justify-between">
-              <ClassOptions ticket={ticket}/>
-              <div>
-                <div className="flex gap-2 justify-end mb-2">
-                  {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
-                  {ticket.departure.have_air_conditioning && (
-                    <Snowflake className="h-4 w-4 text-blue-500"/>
-                  )}
-                  {ticket.departure.is_express && <Zap className="h-4 w-4 text-orange-500"/>}
-                </div>
-                <div className="text-sm text-gray-500 mb-2">
-                  Total available seats: {ticket.available_seats}
-                </div>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                  Select seats - from ${ticket.min_price}
-                </Button>
+          {/* Seat availability and pricing */}
+          <div className="space-y-2 flex flex-col justify-between">
+            <ClassOptions ticket={ticket}/>
+            <div>
+              <div className="flex gap-2 justify-end mb-2">
+                {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
+                {ticket.departure.have_air_conditioning && (
+                  <Snowflake className="h-4 w-4 text-blue-500"/>
+                )}
+                {ticket.departure.is_express && <Zap className="h-4 w-4 text-orange-500"/>}
               </div>
+              <div className="text-sm text-gray-500 mb-2">
+                Total available seats: {ticket.available_seats}
+              </div>
+              <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                Select seats - from ${ticket.min_price}
+              </Button>
             </div>
           </div>
         </div>

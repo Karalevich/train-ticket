@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import { DatePicker } from '@/components/ui/datePicker';
 import { disabled } from '@/lib/utils';
@@ -43,7 +42,7 @@ export default function FilterSidebar() {
     have_express
   } = parseSearchParams(searchParams)
 
-  const [priceRange, setPriceRange] = useState([1920, 7000])
+  const [priceRange, setPriceRange] = useState([500, 7000])
   const [filterOptions, setFilterOptions] = useState([
     { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
     { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
@@ -70,6 +69,14 @@ export default function FilterSidebar() {
     router.push(`/order?${params.toString()}`);
   }
 
+  function setPrice(range: number[]) {
+    const params = new URLSearchParams(Array.from(searchParams.entries()))
+    params.set('price_from', range[0].toString())
+    params.set('price_to', range[1].toString())
+
+    router.push(`/order?${params.toString()}`)
+  }
+
   function onSwitchChange(value: boolean, id: string) {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) {
@@ -93,7 +100,7 @@ export default function FilterSidebar() {
         </form>
       </Form>
 
-      <Separator />
+      <Separator/>
 
       <div className="space-y-3 pt-2">
         {filterOptions.map(option => (
@@ -107,44 +114,29 @@ export default function FilterSidebar() {
         ))}
       </div>
 
-      <Separator />
+      <Separator/>
 
-      <div className="space-y-4 pt-2">
-        <h3 className="text-lg font-medium">Price</h3>
+      <div className="pt-2">
+        <h3 className="text-lg font-medium mb-2">Price range</h3>
         <div className="flex justify-between text-sm">
-          <span>from {priceRange[0]}</span>
-          <span>to {priceRange[1]}</span>
+          <span>Min</span>
+          <span>Max</span>
         </div>
         <Slider
-          defaultValue={[1920, 7000]}
+          defaultValue={[500, 7000]}
           max={7000}
-          min={1000}
+          min={500}
           step={100}
           value={priceRange}
           onValueChange={setPriceRange}
-          className="py-4"
+          onValueCommit={setPrice}
+          className="py-2"
         />
-        <div className="bg-orange-500/20 h-2 rounded-full relative">
-          <div
-            className="absolute h-full bg-orange-500 rounded-full"
-            style={{
-              left: `${((priceRange[0] - 1000) / 6000) * 100}%`,
-              width: `${((priceRange[1] - priceRange[0]) / 6000) * 100}%`,
-            }}
-          />
+        <div className="flex justify-between text-sm">
+          <span>{priceRange[0]}$</span>
+          <span>{priceRange[1]}$</span>
         </div>
       </div>
-
-      <Tabs defaultValue="oneway" className="w-full pt-2">
-        <TabsList className="grid w-full grid-cols-2 bg-gray-700">
-          <TabsTrigger value="oneway" className="data-[state=active]:bg-orange-500">
-            One Way
-          </TabsTrigger>
-          <TabsTrigger value="return" className="data-[state=active]:bg-orange-500">
-            Return
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
     </aside>
   )
 }
