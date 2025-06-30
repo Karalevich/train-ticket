@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { parseSearchParams } from '@/lib/api';
 import { Separator } from '@/components/ui/separator';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const FormSchema = z.object({
   departure: z.optional(z.date()),
@@ -42,7 +43,11 @@ export default function FilterSidebar() {
     have_express
   } = parseSearchParams(searchParams)
 
-  const [priceRange, setPriceRange] = useState([500, 7000])
+  const [price, setPrice] = useState([500, 7000])
+  const [thereDeparture, setThereDeparture] = useState([0, 24])
+  const [backDeparture, setBackDeparture] = useState([0, 24])
+  const [thereArrival, setThereArrival] = useState([0, 24])
+  const [backArrival, setBackArrival] = useState([0, 24])
   const [filterOptions, setFilterOptions] = useState([
     { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
     { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
@@ -51,7 +56,6 @@ export default function FilterSidebar() {
     { id: 'have_wifi', label: 'Wi-Fi', defaultChecked: have_wifi || false },
     { id: 'have_express', label: 'Express', defaultChecked: have_express || false },
   ])
-
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -69,12 +73,31 @@ export default function FilterSidebar() {
     router.push(`/order?${params.toString()}`);
   }
 
-  function setPrice(range: number[]) {
-    const params = new URLSearchParams(Array.from(searchParams.entries()))
-    params.set('price_from', range[0].toString())
-    params.set('price_to', range[1].toString())
+  function setPriceRange(range: number[]) {
+    updateParams('price_from', range[0], 'price_to', range[1]);
+  }
 
-    router.push(`/order?${params.toString()}`)
+  function setThereDepartureRange(range: number[]) {
+    updateParams('start_departure_hour_from', range[0], 'start_departure_hour_to', range[1]);
+  }
+
+  function setThereArrivalRange(range: number[]) {
+    updateParams('start_arrival_hour_from', range[0], 'start_arrival_hour_to', range[1]);
+  }
+
+  function setBackDepartureRange(range: number[]) {
+    updateParams('end_departure_hour_from', range[0], 'end_departure_hour_to', range[1]);
+  }
+
+  function setBackArrivalRange(range: number[]) {
+    updateParams('end_arrival_hour_from', range[0], 'end_arrival_hour_to', range[1]);
+  }
+
+  function updateParams(key1: string, value1: number, key2: string, value2: number) {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set(key1, value1.toString());
+    params.set(key2, value2.toString());
+    router.push(`/order?${params.toString()}`);
   }
 
   function onSwitchChange(value: boolean, id: string) {
@@ -127,16 +150,109 @@ export default function FilterSidebar() {
           max={7000}
           min={500}
           step={100}
-          value={priceRange}
-          onValueChange={setPriceRange}
-          onValueCommit={setPrice}
+          value={price}
+          onValueChange={setPrice}
+          onValueCommit={setPriceRange}
           className="py-2"
         />
-        <div className="flex justify-between text-sm">
-          <span>{priceRange[0]}$</span>
-          <span>{priceRange[1]}$</span>
+        <div className="flex justify-between text-xs">
+          <span>{price[0]}$</span>
+          <span>{price[1]}$</span>
         </div>
       </div>
+
+      <Separator/>
+
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-lg font-medium">There</AccordionTrigger>
+          <AccordionContent>
+            <div className="mb-2">
+              <span className="flex justify-between text-sm">Departure time</span>
+              <Slider
+                defaultValue={[0, 24]}
+                max={24}
+                min={0}
+                step={1}
+                value={thereDeparture}
+                onValueChange={setThereDeparture}
+                onValueCommit={setThereDepartureRange}
+                className="py-2"
+              />
+              <div className="flex justify-between text-xs">
+                <span>{thereDeparture[0]}:00</span>
+                <span>{thereDeparture[1]}:00</span>
+              </div>
+            </div>
+
+            <div className="mb-2">
+              <span className="flex justify-between text-sm">Arrival time</span>
+              <Slider
+                defaultValue={[0, 24]}
+                max={24}
+                min={0}
+                step={1}
+                value={thereArrival}
+                onValueChange={setThereArrival}
+                onValueCommit={setThereArrivalRange}
+                className="py-2"
+              />
+              <div className="flex justify-between text-xs">
+                <span>{thereArrival[0]}:00</span>
+                <span>{thereArrival[1]}:00</span>
+              </div>
+            </div>
+
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <Separator/>
+
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-lg font-medium">Back</AccordionTrigger>
+          <AccordionContent>
+            <div className="mb-2">
+              <span className="flex justify-between text-sm">Departure time</span>
+              <Slider
+                defaultValue={[0, 24]}
+                max={24}
+                min={0}
+                step={1}
+                value={backDeparture}
+                onValueChange={setBackDeparture}
+                onValueCommit={setBackDepartureRange}
+                className="py-2"
+              />
+              <div className="flex justify-between text-xs">
+                <span>{backDeparture[0]}:00</span>
+                <span>{backDeparture[1]}:00</span>
+              </div>
+            </div>
+
+            <div className="mb-2">
+              <span className="flex justify-between text-sm">Arrival time</span>
+              <Slider
+                defaultValue={[0, 24]}
+                max={24}
+                min={0}
+                step={1}
+                value={backArrival}
+                onValueChange={setBackArrival}
+                onValueCommit={setBackArrivalRange}
+                className="py-2"
+              />
+              <div className="flex justify-between text-xs">
+                <span>{backArrival[0]}:00</span>
+                <span>{backArrival[1]}:00</span>
+              </div>
+            </div>
+
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
     </aside>
   )
 }
