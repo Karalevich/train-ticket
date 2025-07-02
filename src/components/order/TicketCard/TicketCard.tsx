@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight, ArrowLeft, Train, Wifi, Snowflake, Zap } from 'lucide-react'
 import { formatTime, formatDuration } from '@/lib/utils'
-import { Ticket } from '@/lib/api'
+import { PriceRange, Ticket } from '@/lib/api'
 import { Fragment } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TicketCardProps {
   ticket: Ticket
@@ -19,58 +20,49 @@ export default function TicketCard({ ticket }: TicketCardProps) {
           <p className="text-sm text-gray-500">
             {ticket.departure.from.city.name} → {ticket.departure.to.city.name}
           </p>
-          {ticket.is_express && (
-            <div
-              className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-              <Zap className="w-3 h-3 mr-1"/>
-              Express
-            </div>
-          )}
         </div>
       </div>
 
       {/* Schedule column */}
-      <div className="col-span-9 p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Time and route info */}
-          <div className="space-y-4">
-            {/* Outbound journey */}
+      <div className="col-span-9 p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Time and route info */}
+        <div className="space-y-4">
+          {/* Outbound journey */}
+          <JourneyInfo
+            from={ticket.departure.from}
+            to={ticket.departure.to}
+            duration={ticket.departure.duration}
+            direction="outbound"
+          />
+
+          {/* Return journey */}
+          {ticket.arrival && (
             <JourneyInfo
-              from={ticket.departure.from}
-              to={ticket.departure.to}
-              duration={ticket.departure.duration}
-              direction="outbound"
+              from={ticket.arrival.from}
+              to={ticket.arrival.to}
+              duration={ticket.arrival.duration}
+              direction="return"
             />
+          )}
+        </div>
 
-            {/* Return journey */}
-            {ticket.arrival && (
-              <JourneyInfo
-                from={ticket.arrival.from}
-                to={ticket.arrival.to}
-                duration={ticket.arrival.duration}
-                direction="return"
-              />
-            )}
-          </div>
-
-          {/* Seat availability and pricing */}
-          <div className="space-y-2 flex flex-col justify-between">
-            <ClassOptions ticket={ticket}/>
-            <div>
-              <div className="flex gap-2 justify-end mb-2">
-                {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
-                {ticket.departure.have_air_conditioning && (
-                  <Snowflake className="h-4 w-4 text-blue-500"/>
-                )}
-                {ticket.departure.is_express && <Zap className="h-4 w-4 text-orange-500"/>}
-              </div>
-              <div className="text-sm text-gray-500 mb-2">
-                Total available seats: {ticket.available_seats}
-              </div>
-              <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                Select seats - from ${ticket.min_price}
-              </Button>
+        {/* Seat availability and pricing */}
+        <div className="space-y-2 flex flex-col justify-between">
+          <ClassOptions ticket={ticket}/>
+          <div>
+            <div className="flex gap-2 justify-end mb-2">
+              {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
+              {ticket.departure.have_air_conditioning && (
+                <Snowflake className="h-4 w-4 text-blue-500"/>
+              )}
+              {ticket.departure.is_express && <Zap className="h-4 w-4 text-blue-500"/>}
             </div>
+            <div className="text-sm text-gray-500 mb-2">
+              Total available seats: {ticket.available_seats}
+            </div>
+            <Button className="w-full bg-orange-500 hover:bg-orange-600">
+              Select seats - from ${ticket.min_price}
+            </Button>
           </div>
         </div>
       </div>
@@ -127,24 +119,32 @@ function ClassOptions({ ticket }: { ticket: Ticket }) {
   const { departure } = ticket
   const { available_seats_info, price_info } = departure
 
+  function getAvailableSeatsInfo(seats: PriceRange) {
+    return Object.entries(seats).map(([key, value]) => ({[key.split('_')[0]]: value}))
+
+  }
+
   const classes = [
     {
       label: 'First Class',
       available: ticket.have_first_class || departure.have_first_class,
       seats: available_seats_info?.first,
-      price: price_info?.first?.bottom_price,
+      price: price_info?.first?.price,
     },
     {
       label: 'Second Class',
       available: ticket.have_second_class || departure.have_second_class,
       seats: available_seats_info?.second,
-      price: price_info?.second?.bottom_price,
+      price: price_info?.second?.top_price,
+      tooltip: getAvailableSeatsInfo(price_info?.second || {}),
     },
     {
       label: 'Third Class',
       available: ticket.have_third_class || departure.have_third_class,
       seats: available_seats_info?.third,
-      price: price_info?.third?.bottom_price,
+      price: price_info?.third?.top_price,
+      tooltip: getAvailableSeatsInfo(price_info?.third || {}),
+
     },
     {
       label: 'Fourth Class',
@@ -162,8 +162,26 @@ function ClassOptions({ ticket }: { ticket: Ticket }) {
           cls.seats && (
             <Fragment key={cls.label}>
               <span>{cls.label}</span>
-              <span className="text-gray-500 justify-self-center">{cls.seats}</span>
-              <span className="font-bold text-orange-500 justify-self-end">${cls.price}</span>
+              <Tooltip>
+                <TooltipTrigger className="text-gray-500 justify-self-center">{cls.seats}</TooltipTrigger>
+                {cls.tooltip && <TooltipContent>
+                  <ul className="flex flex-col gap-2">
+                    {cls.tooltip.map((t, i) => {
+                      return (
+                        <li key={i} className="flex justify-between">
+                          <span className="capitalize">{Object.keys(t)[0]}:&nbsp;&nbsp;&nbsp;</span>
+                          <span className="font-bold text-amber-500">${Object.values(t)[0]}</span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </TooltipContent>}
+              </Tooltip>
+
+              <div className="justify-self-end">
+                {cls.tooltip?.length && <span className="text-xs">from&nbsp;</span>}
+                <span className="font-bold text-amber-500 justify-self-end">${cls.price}</span>
+              </div>
             </Fragment>
           )
       )}

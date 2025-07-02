@@ -165,7 +165,7 @@ export default function FilterSidebar() {
 
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <AccordionTrigger className="text-lg font-medium">There</AccordionTrigger>
+          <AccordionTrigger className="text-lg font-medium py-2">There</AccordionTrigger>
           <AccordionContent>
             <div className="mb-2">
               <span className="flex justify-between text-sm">Departure time</span>
@@ -211,7 +211,7 @@ export default function FilterSidebar() {
 
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <AccordionTrigger className="text-lg font-medium">Back</AccordionTrigger>
+          <AccordionTrigger className="text-lg font-medium py-2">Back</AccordionTrigger>
           <AccordionContent>
             <div className="mb-2">
               <span className="flex justify-between text-sm">Departure time</span>

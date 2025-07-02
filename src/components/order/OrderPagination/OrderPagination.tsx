@@ -26,9 +26,8 @@ export default function OrderPagination({ totalCount, maxPagesToShow = 3 }: Orde
     return null;
   }
 
-  const totalPages = Math.ceil(totalCount / limit) -1
-  let currentPage = offset / limit;
-  if (currentPage === 0) currentPage = 1;
+  const totalPages = Math.ceil(totalCount / limit)
+  let currentPage = (offset / limit) + 1; // Convert offset to page number
 
   let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
   let end = Math.min(totalPages, start + maxPagesToShow - 1);
@@ -41,7 +40,7 @@ export default function OrderPagination({ totalCount, maxPagesToShow = 3 }: Orde
       return '#'; // Invalid page number
     }
     const params = new URLSearchParams(searchParams);
-    const offset = limit ? pageNumber * limit : 0;
+    const offset = limit ? (pageNumber - 1) * limit : 0;
     params.set('offset', offset.toString());
     if (pageNumber === 1) {
       params.delete('offset');
@@ -100,11 +99,11 @@ export default function OrderPagination({ totalCount, maxPagesToShow = 3 }: Orde
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href={createPageURL(currentPage - 1)} aria-disabled={currentPage === 1}/>
+          <PaginationPrevious href={createPageURL(currentPage - 1)} disabled={currentPage === 1}/>
         </PaginationItem>
         {pages}
         <PaginationItem>
-          <PaginationNext href={createPageURL(currentPage + 1)}/>
+          <PaginationNext href={createPageURL(currentPage + 1)} disabled={currentPage === totalPages}/>
         </PaginationItem>
       </PaginationContent>
     </Pagination>

@@ -47,6 +47,7 @@ export interface TrainInfo {
 export interface PriceRange {
   bottom_price?: number
   price?: number
+  side_price?: number
   top_price?: number
 }
 
