@@ -12,14 +12,14 @@ export default function TicketListControls() {
   function setSortBy(value: string) {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set('sort', value || 'min_price');
-    router.push(`/order?${params.toString()}`);
+    router.push(`/order/tickets?${params.toString()}`);
   }
 
   function setPerPage(value: string) {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set('limit', value || '5');
     params.delete('offset')
-    router.push(`/order?${params.toString()}`);
+    router.push(`/order/tickets?${params.toString()}`);
   }
 
   return (

@@ -40,14 +40,24 @@ export default function FilterSidebar() {
     have_third_class,
     have_fourth_class,
     have_wifi,
-    have_express
+    have_express,
+    price_from,
+    price_to,
+    start_departure_hour_from,
+    start_departure_hour_to,
+    start_arrival_hour_from,
+    start_arrival_hour_to,
+    end_departure_hour_from,
+    end_departure_hour_to,
+    end_arrival_hour_from,
+    end_arrival_hour_to,
   } = parseSearchParams(searchParams)
 
-  const [price, setPrice] = useState([500, 7000])
-  const [thereDeparture, setThereDeparture] = useState([0, 24])
-  const [backDeparture, setBackDeparture] = useState([0, 24])
-  const [thereArrival, setThereArrival] = useState([0, 24])
-  const [backArrival, setBackArrival] = useState([0, 24])
+  const [price, setPrice] = useState([price_from || 500, price_to || 7000])
+  const [thereDeparture, setThereDeparture] = useState([start_departure_hour_from || 0, start_departure_hour_to || 24])
+  const [backDeparture, setBackDeparture] = useState([start_arrival_hour_from || 0, start_arrival_hour_to || 24])
+  const [thereArrival, setThereArrival] = useState([end_departure_hour_from || 0, end_departure_hour_to || 24])
+  const [backArrival, setBackArrival] = useState([end_arrival_hour_from || 0, end_arrival_hour_to || 24])
   const [filterOptions, setFilterOptions] = useState([
     { id: 'have_first_class', label: 'First Class', defaultChecked: have_first_class || false },
     { id: 'have_second_class', label: 'Second Class', defaultChecked: have_second_class || false },
@@ -70,7 +80,7 @@ export default function FilterSidebar() {
     params.set('date_start', data?.departure ? data.departure.toISOString().split('T')[0] : '');
     params.set('date_end', data?.return ? data.return.toISOString().split('T')[0] : '');
 
-    router.push(`/order?${params.toString()}`);
+    router.push(`/order/tickets?${params.toString()}`);
   }
 
   function setPriceRange(range: number[]) {
@@ -97,7 +107,8 @@ export default function FilterSidebar() {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set(key1, value1.toString());
     params.set(key2, value2.toString());
-    router.push(`/order?${params.toString()}`);
+    params.delete('offset'); // Reset offset to avoid stale data
+    router.push(`/order/tickets?${params.toString()}`);
   }
 
   function onSwitchChange(value: boolean, id: string) {
@@ -108,7 +119,7 @@ export default function FilterSidebar() {
       params.delete(id);
     }
     setFilterOptions(prev => prev.map(option => option.id === id ? { ...option, defaultChecked: value } : option));
-    router.push(`/order?${params.toString()}`)
+    router.push(`/order/tickets?${params.toString()}`)
   }
 
 

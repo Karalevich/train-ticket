@@ -71,7 +71,7 @@ export default function HeroSection() {
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value as string);
     })
-    router.push(`/order?${params.toString()}`);
+    router.push(`/order/tickets?${params.toString()}`);
   }
 
   return (
