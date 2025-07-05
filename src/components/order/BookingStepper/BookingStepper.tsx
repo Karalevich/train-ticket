@@ -15,12 +15,12 @@ export default function BookingStepper({ currentStep }: BookingStepperProps) {
 
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="flex items-center mx-6">
+      <ol role="list" className="flex items-center mx-0 lg:mx-6">
         {steps.map((step) => (
-          <li key={step.name} className='flex-1'>
+          <li key={step.name} className={cn('flex-1', step.id === currentStep ? '' : 'hidden sm:block')}>
             <div
               className={cn(
-                'relative flex items-center px-14 py-4 transition-all duration-200 text-white rounded-l-lg',
+                'relative flex items-center px-16 sm:px-6 lg:px-14 py-2 md:py-4 transition-all duration-200 text-white text-sm md:text-xl font-medium rounded-l-lg',
                 step.id === currentStep
                   ? 'bg-gradient-to-r from-orange-500 to-amber-400'
                   : step.id < currentStep
@@ -31,9 +31,9 @@ export default function BookingStepper({ currentStep }: BookingStepperProps) {
             >
                     <span
                       className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-white'>
-                        <span className="text-xl flex items-center justify-center">{step.id}</span>
+                        <span className="flex items-center justify-center">{step.id}</span>
                     </span>
-              <span className='ml-4 text-xl font-medium'>{step.name}</span>
+              <span className='ml-1 lg:ml-4'>{step.name}</span>
             </div>
           </li>
         ))}
