@@ -39,9 +39,8 @@ export interface StationInfo {
 }
 
 export interface TrainInfo {
-  // Add train-specific fields if needed
-  // Example: name: string; number: string;
-  [key: string]: any
+  _id: string
+  name: string
 }
 
 export interface PriceRange {

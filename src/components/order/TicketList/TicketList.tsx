@@ -8,7 +8,7 @@ export default async function TicketList({ filters }: { filters: TicketFilters }
   return (
     <>
       {data?.items.map((ticket, index) => (
-        <TicketCard key={index} ticket={ticket} />
+        <TicketCard key={index} ticket={ticket} filters={filters} />
       ))}
 
       <div className="flex justify-center mt-8">

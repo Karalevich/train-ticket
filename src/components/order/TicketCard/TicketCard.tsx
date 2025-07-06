@@ -1,19 +1,26 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight, ArrowLeft, Train, Wifi, Snowflake, Zap } from 'lucide-react'
-import { formatTime, formatDuration } from '@/lib/utils'
-import { PriceRange, Ticket } from '@/lib/api'
+import { formatTime, formatDuration, cn } from '@/lib/utils'
+import { ArrivalDepartureInfo, PriceRange, Ticket, TicketFilters } from '@/lib/api'
 import { Fragment } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import Link from 'next/link';
+import { Separator } from "@/components/ui/separator";
 
 interface TicketCardProps {
   ticket: Ticket
+  filters: TicketFilters
 }
 
-export default function TicketCard({ ticket }: TicketCardProps) {
+export default function TicketCard({ ticket, filters }: TicketCardProps) {
+  const params = new URLSearchParams(Array.from(Object.entries(filters)))
+  const arrivalTrainId = ticket.arrival?.train?._id ? `/${ticket.arrival.train._id}` : '';
+  const path = `/order/tickets/${ticket.departure.train._id}${arrivalTrainId}?${params.toString()}`
+
   return (
     <div className="bg-white rounded-md border overflow-hidden grid grid-cols-12 gap-0">
       {/* Train info column */}
-      <div className="col-span-3 bg-gray-100 p-4 flex flex-col items-center justify-center">
+      <div className="col-span-3 row-span-2 bg-gray-100 p-4 flex flex-col items-center justify-center">
         <Train className="h-12 w-12 text-gray-500 mb-4"/>
         <div className="text-center">
           <p className="text-xl font-bold">{ticket.departure.train.name || 'N/A'}</p>
@@ -24,9 +31,9 @@ export default function TicketCard({ ticket }: TicketCardProps) {
       </div>
 
       {/* Schedule column */}
-      <div className="col-span-9 p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="col-span-9 p-4 grid gap-4">
         {/* Time and route info */}
-        <div className="space-y-4">
+        <div className=" grid md:grid-cols-2 gap-4">
           {/* Outbound journey */}
           <JourneyInfo
             from={ticket.departure.from}
@@ -35,36 +42,46 @@ export default function TicketCard({ ticket }: TicketCardProps) {
             direction="outbound"
           />
 
-          {/* Return journey */}
-          {ticket.arrival && (
-            <JourneyInfo
-              from={ticket.arrival.from}
-              to={ticket.arrival.to}
-              duration={ticket.arrival.duration}
-              direction="return"
-            />
-          )}
+          {/* Seat availability and pricing */}
+          <ClassOptions direction={ticket.departure}/>
         </div>
 
-        {/* Seat availability and pricing */}
-        <div className="space-y-2 flex flex-col justify-between">
-          <ClassOptions ticket={ticket}/>
-          <div>
-            <div className="flex gap-2 justify-end mb-2">
-              {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
-              {ticket.departure.have_air_conditioning && (
-                <Snowflake className="h-4 w-4 text-blue-500"/>
-              )}
-              {ticket.departure.is_express && <Zap className="h-4 w-4 text-blue-500"/>}
+        {/* Return journey */}
+        {ticket.arrival && (
+          <>
+            <Separator/>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Outbound journey */}
+              <JourneyInfo
+                from={ticket.arrival.from}
+                to={ticket.arrival.to}
+                duration={ticket.arrival.duration}
+                direction="return"
+              />
+
+              {/* Seat availability and pricing */}
+              <ClassOptions direction={ticket.arrival}/>
             </div>
-            <div className="text-sm text-gray-500 mb-2">
-              Total available seats: {ticket.available_seats}
-            </div>
-            <Button className="w-full bg-orange-500 hover:bg-orange-600">
-              Select seats - from ${ticket.min_price}
-            </Button>
-          </div>
+          </>
+        )}
+      </div>
+
+      {/* Amenities and actions column */}
+      <div className="col-start-9 col-span-4 p-4">
+        <div className="flex gap-2 justify-end mb-2">
+          {ticket.departure.have_wifi && <Wifi className="h-4 w-4 text-blue-500"/>}
+          {ticket.departure.have_air_conditioning && (
+            <Snowflake className="h-4 w-4 text-blue-500"/>
+          )}
+          {ticket.departure.is_express && <Zap className="h-4 w-4 text-blue-500"/>}
         </div>
+        <div className="text-sm text-gray-500 mb-2">
+          Total available seats: {ticket.available_seats}
+        </div>
+        <Button asChild className="w-full bg-orange-500 hover:bg-orange-600">
+          <Link href={path}>Select seats - from ${ticket.min_price}</Link>
+        </Button>
       </div>
     </div>
   )
@@ -83,14 +100,14 @@ function JourneyInfo({
 }) {
   return (
     <div className="flex items-stretch gap-2">
-      <div className="flex flex-col text-center flex-1 justify-between">
-        <div>
-          <p className="font-bold text-xs">{formatTime(from?.datetime)[0]}</p>
-          <p className="text-lg font-bold">{formatTime(from?.datetime)[1]}</p>
-        </div>
-        <p className="text-sm">{from?.city.name}</p>
-        <p className="text-xs text-gray-500">{from?.railway_station_name}</p>
-      </div>
+      <JourneyStationInfo
+        datetime={from?.datetime}
+        cityName={from?.city.name}
+        stationName={from?.railway_station_name}
+        isArrival={false}
+        className="text-left"
+      />
+
       <div className="flex flex-col flex-1 px-2 relative justify-center">
         <div className='flex flex-col items-center'>
           {direction === 'outbound' ? (
@@ -103,44 +120,74 @@ function JourneyInfo({
           {formatDuration(duration)}
         </p>
       </div>
-      <div className="flex flex-col text-center flex-1 justify-between">
-        <div>
-          <p className="text-xs font-bold">{formatTime(to?.datetime)[0]}</p>
-          <p className="text-lg font-bold">{formatTime(to?.datetime)[1]}</p>
-        </div>
-        <p className="text-sm">{to?.city.name}</p>
-        <p className="text-xs text-gray-500">{to?.railway_station_name}</p>
-      </div>
+
+      <JourneyStationInfo
+        datetime={to?.datetime}
+        cityName={to?.city.name}
+        stationName={to?.railway_station_name}
+        isArrival={true}
+        className="text-right"
+      />
     </div>
   )
 }
 
-function ClassOptions({ ticket }: { ticket: Ticket }) {
-  const { departure } = ticket
-  const { available_seats_info, price_info } = departure
+function JourneyStationInfo({
+                              datetime,
+                              cityName,
+                              stationName,
+                              isArrival,
+                              className
+                            }: {
+  datetime: number
+  cityName: string
+  stationName: string
+  isArrival: boolean
+  className?: string
+}) {
+  return (
+    <div className={cn('flex flex-col md:text-center flex-1 justify-between', className)}>
+      <div>
+        <p className={`font-bold text-xs${isArrival ? ' text-xs' : ''}`}>{formatTime(datetime)[0]}</p>
+        <p className="text-lg font-bold">{formatTime(datetime)[1]}</p>
+      </div>
+      <p className="text-sm">{cityName}</p>
+      <p className="text-xs text-gray-500">{stationName}</p>
+    </div>
+  )
+}
+
+function ClassOptions({ direction }: { direction: ArrivalDepartureInfo }) {
+  const {
+    available_seats_info,
+    price_info,
+    have_first_class,
+    have_second_class,
+    have_third_class,
+    have_fourth_class
+  } = direction
 
   function getAvailableSeatsInfo(seats: PriceRange) {
-    return Object.entries(seats).map(([key, value]) => ({[key.split('_')[0]]: value}))
-
+    return Object.entries(seats).map(([key, value]) => ({ [key.split('_')[0]]: value }))
   }
 
   const classes = [
     {
       label: 'First Class',
-      available: ticket.have_first_class || departure.have_first_class,
+      available: have_first_class,
       seats: available_seats_info?.first,
       price: price_info?.first?.price,
     },
     {
       label: 'Second Class',
-      available: ticket.have_second_class || departure.have_second_class,
+      available: have_second_class,
       seats: available_seats_info?.second,
       price: price_info?.second?.top_price,
       tooltip: getAvailableSeatsInfo(price_info?.second || {}),
     },
     {
       label: 'Third Class',
-      available: ticket.have_third_class || departure.have_third_class,
+      available: have_third_class,
       seats: available_seats_info?.third,
       price: price_info?.third?.top_price,
       tooltip: getAvailableSeatsInfo(price_info?.third || {}),
@@ -148,14 +195,14 @@ function ClassOptions({ ticket }: { ticket: Ticket }) {
     },
     {
       label: 'Fourth Class',
-      available: ticket.have_fourth_class || departure.have_fourth_class,
+      available: have_fourth_class,
       seats: available_seats_info?.fourth,
       price: price_info?.fourth?.bottom_price,
     },
   ]
 
   return (
-    <div className="grid grid-cols-[2fr_1fr_1fr] gap-2">
+    <div className="grid grid-cols-3 md:grid-cols-[2fr_1fr_1fr] gap-2 items-start">
       {classes.map(
         (cls) =>
           cls.available &&

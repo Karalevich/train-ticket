@@ -15,19 +15,25 @@ export default function BookingStepper({ currentStep }: BookingStepperProps) {
 
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="flex items-center mx-0 lg:mx-6">
+      <ol role="list" className="flex items-center mx-0 lg:mx-2">
         {steps.map((step) => (
-          <li key={step.name} className={cn('flex-1', step.id === currentStep ? '' : 'hidden sm:block')}>
+          <li key={step.name} className={cn(
+            'relative flex-1',
+            step.id === currentStep ? '' : 'hidden sm:block',
+          )}>
             <div
               className={cn(
-                'relative flex items-center px-16 sm:px-6 lg:px-14 py-2 md:py-4 transition-all duration-200 text-white text-sm md:text-xl font-medium rounded-l-lg',
+                'flex items-center px-16 sm:px-6 lg:px-14 py-2 md:py-4 transition-all duration-200 text-white text-sm md:text-xl font-medium rounded-l-lg',
                 step.id === currentStep
                   ? 'bg-gradient-to-r from-orange-500 to-amber-400'
                   : step.id < currentStep
                     ? 'bg-gradient-to-r from-orange-300 to-yellow-300'
                     : 'bg-gray-800',
               )}
-              style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%)' }}
+              style={{
+                clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%)',
+                width: step.id !== steps.length ? 'calc(100% + 16px)' : ''
+              }}
             >
                     <span
                       className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-white'>
