@@ -1,6 +1,6 @@
 import { fetchTickets, TicketFilters } from '@/lib/api';
-import OrderPagination from '@/components/order/OrderPagination/OrderPagination';
-import TicketCard from '@/components/order/TicketCard/TicketCard';
+import OrderPagination from '@/components/order/OrderPagination';
+import TicketCard from '@/components/order/TicketCard';
 
 export default async function TicketList({ filters }: { filters: TicketFilters }) {
   const data = await fetchTickets(filters)

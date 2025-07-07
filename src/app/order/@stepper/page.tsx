@@ -1,6 +1,6 @@
 import { CreditCard, User, Ticket, FileCheck } from 'lucide-react'
 import { TicketFilters } from '@/lib/api';
-import BookingStepper from '@/components/order/BookingStepper/BookingStepper';
+import BookingStepper from '@/components/order/BookingStepper';
 
 export default async function BookingStepperSlot({ searchParams }: {searchParams: TicketFilters}) {
   const filters = await searchParams

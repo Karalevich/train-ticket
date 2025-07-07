@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
-import TicketList from '@/components/order/TicketList/TicketList';
+import TicketList from '@/components/order/TicketList';
 import TicketListSkeleton from '@/app/order/@tickets/tickets/loading';
-import TicketListControls from '@/components/order/TicketListControls/TicketListControls';
+import TicketListControls from '@/components/order/TicketListControls';
 import { TicketFilters } from '@/lib/api';
-import { TotalTickets } from '@/components/order/TotalTickets/TotalTickets';
+import { TotalTickets } from '@/components/order/TotalTickets';
 
 
 export default async function TicketsPage({ searchParams }: { searchParams: TicketFilters }) {

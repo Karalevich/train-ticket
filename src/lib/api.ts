@@ -1,5 +1,6 @@
 import { ReadonlyURLSearchParams } from 'next/dist/client/components/navigation.react-server';
 import { CityInterface } from '@/features/ticket/types';
+import { appendFiltersToParams } from "@/lib/utils";
 
 export interface TicketFilters {
   from_city_id: string
@@ -100,20 +101,49 @@ export interface TicketsResponse {
   items: Ticket[]
 }
 
-export async function fetchTickets(filters: TicketFilters): Promise<TicketsResponse> {
-  const params = new URLSearchParams()
+export interface SeatsResponse {
+  _id: string
+  name: string
+  class_type: string
+  have_first_class: boolean
+  have_second_class: boolean
+  have_third_class: boolean
+  have_fourth_class: boolean
+  have_wifi: boolean
+  have_air_conditioning: boolean
+  have_express: boolean
+  price?: number
+  top_price?: number
+  bottom_price?: number
+  side_price?: number
+  linens_price?: number
+  wifi_price?: number
+  avaliable_seats: number
+  is_linens_included: boolean
+  seats: Array<{
+    index: number
+    available: boolean
+  }>
+}
 
-  // Add all filters to URL params
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      params.append(key, value.toString())
-    }
-  })
+export async function fetchTickets(filters: TicketFilters): Promise<TicketsResponse> {
+  const params = appendFiltersToParams(filters)
 
   const response = await fetch(`https://students.netoservices.ru/fe-diplom/routes?${params}`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch tickets')
+  }
+
+  return response.json()
+}
+
+export async function fetchSeats(id: string, filters: TicketFilters): Promise<SeatsResponse[]> {
+  const params = appendFiltersToParams(filters)
+  const response = await fetch(`https://students.netoservices.ru/fe-diplom/routes/${id}/seats?${params}`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch seats')
   }
 
   return response.json()

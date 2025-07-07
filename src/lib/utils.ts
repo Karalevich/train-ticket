@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { addDays } from 'date-fns';
+import { TicketFilters } from '@/lib/api';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -44,4 +45,16 @@ export function disabled(date: Date) {
   today.setHours(0, 0, 0, 0);
 
   return date < today || date > addDays(today, 90);
+}
+
+export function appendFiltersToParams(filters: TicketFilters) {
+  const params = new URLSearchParams()
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, value.toString())
+    }
+  })
+
+  return params;
 }

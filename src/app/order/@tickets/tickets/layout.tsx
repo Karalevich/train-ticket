@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import FilterSidebar from '@/components/order/FilterSidebar/FilterSidebar';
-import RecentTickets from '@/components/order/RecentTickets/RecentTickets';
+import FilterSidebar from '@/components/order/FilterSidebar';
+import RecentTickets from '@/components/order/RecentTickets';
 
 export default function OrderLayout({
                                       children,
