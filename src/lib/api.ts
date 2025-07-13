@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from 'next/dist/client/components/navigation.react-server';
 import { CityInterface } from '@/features/ticket/types';
-import { appendFiltersToParams } from "@/lib/utils";
+import { appendFiltersToParams } from '@/lib/utils';
 
 export interface TicketFilters {
   from_city_id: string
@@ -66,6 +66,7 @@ export interface SeatsInfo {
 }
 
 export interface ArrivalDepartureInfo {
+  _id: string
   have_first_class: boolean
   have_second_class: boolean
   have_third_class: boolean
@@ -141,7 +142,7 @@ export async function fetchTickets(filters: TicketFilters): Promise<TicketsRespo
 export async function fetchSeats(id: string, filters: TicketFilters): Promise<SeatsResponse[]> {
   const params = appendFiltersToParams(filters)
   const response = await fetch(`https://students.netoservices.ru/fe-diplom/routes/${id}/seats?${params}`)
-
+console.log(`https://students.netoservices.ru/fe-diplom/routes/${id}/seats?${params}`)
   if (!response.ok) {
     throw new Error('Failed to fetch seats')
   }

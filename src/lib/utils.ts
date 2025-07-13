@@ -40,6 +40,14 @@ export function formatDuration(seconds: number | undefined): string {
   return `${hours}:${minutes.toString().padStart(1, '0')}`
 }
 
+export function formatDurationInHoursAndMinutes(seconds: number | undefined): [number, number] {
+  if (seconds === undefined || seconds < 0) return [0, 0];
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return [hours, minutes];
+}
+
 export function disabled(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

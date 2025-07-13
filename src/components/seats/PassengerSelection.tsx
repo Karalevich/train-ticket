@@ -1,4 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+'use client'
+
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -18,7 +20,7 @@ export default function PassengerSelection() {
   }
 
   return (
-    <Card>
+    <>
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Specify Passengers</CardTitle>
       </CardHeader>
@@ -82,6 +84,6 @@ export default function PassengerSelection() {
           </div>
         </div>
       </CardContent>
-    </Card>
+    </>
   );
 }
