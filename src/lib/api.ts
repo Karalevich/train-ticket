@@ -102,27 +102,31 @@ export interface TicketsResponse {
   items: Ticket[]
 }
 
+export type ClassType = 'first' | 'second' | 'third' | 'fourth';
+
+export interface Coach {
+  _id: string
+  name: string
+  class_type: ClassType
+  have_first_class: boolean
+  have_second_class: boolean
+  have_third_class: boolean
+  have_fourth_class: boolean
+  have_wifi: boolean
+  have_air_conditioning: boolean
+  have_express: boolean
+  price?: number
+  top_price?: number
+  bottom_price?: number
+  side_price?: number
+  linens_price?: number
+  wifi_price?: number
+  available_seats: number
+  is_linens_included: boolean
+}
+
 export interface SeatsResponse {
-  coach: {
-    _id: string
-    name: string
-    class_type: string
-    have_first_class: boolean
-    have_second_class: boolean
-    have_third_class: boolean
-    have_fourth_class: boolean
-    have_wifi: boolean
-    have_air_conditioning: boolean
-    have_express: boolean
-    price?: number
-    top_price?: number
-    bottom_price?: number
-    side_price?: number
-    linens_price?: number
-    wifi_price?: number
-    avaliable_seats: number
-    is_linens_included: boolean
-  }
+  coach: Coach
   seats: Array<{
     index: number
     available: boolean
